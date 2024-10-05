@@ -5,11 +5,15 @@
     <vendor>walensaz</vendor>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>Git4Idea</depends>
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
+
+
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.walensaz.timetrackerflex.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <toolWindow factoryClass="com.github.walensaz.timetrackerflex.windows.ActivityWindow" id="TimeTrackerActivityWindow"/>
+        <typedHandler implementation="com.github.walensaz.timetrackerflex.intellij.KeyHandler"/>
     </extensions>
 
     <applicationListeners>
