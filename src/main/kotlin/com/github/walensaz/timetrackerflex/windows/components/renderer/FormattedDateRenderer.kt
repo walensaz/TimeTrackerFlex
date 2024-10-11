@@ -1,7 +1,5 @@
 package com.github.walensaz.timetrackerflex.windows.components.renderer
 
-import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.swing.table.DefaultTableCellRenderer
 

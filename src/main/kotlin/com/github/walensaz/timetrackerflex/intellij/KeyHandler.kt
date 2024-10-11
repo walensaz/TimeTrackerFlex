@@ -12,13 +12,11 @@ import com.intellij.psi.PsiFile
 class KeyHandler : TypedHandlerDelegate() {
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        serviceOrNull<TimeTracker>()?.let { timeTracker ->
-            timeTracker.timeTrackerEventHandler.handleEvent(TimeTrackerEventFactory.create(
-                TimeTrackerEventType.TYPING,
-                project,
-                file.name
-            ))
-        }
+        serviceOrNull<TimeTracker>()?.timeTrackerEventHandler?.handleEvent(TimeTrackerEventFactory.create(
+            TimeTrackerEventType.TYPING,
+            project,
+            file.name
+        ))
 
         return super.charTyped(c, project, editor, file)
     }

@@ -32,10 +32,10 @@ data class TimeTrackerStateHolder(
             val existingByProjectName = existingByActivityType[activity.projectName] ?: emptyMap()
             val existingByBranchName = existingByProjectName[activity.gitBranch] ?: emptyMap()
             val existingByFileName = existingByBranchName[activity.fileName] ?: emptyList()
-            val newActivities = compareEndAndNew(existingByFileName, activity)
+            val updatedActivities = compareEndAndNew(existingByFileName, activity)
 
             // Build the new structure, making sure to create new instances for immutability
-            val updatedBranch = existingByBranchName + (activity.fileName to newActivities)
+            val updatedBranch = existingByBranchName + (activity.fileName to updatedActivities)
             val updatedProject = existingByProjectName + (activity.gitBranch to updatedBranch)
             val updatedType = existingByActivityType + (activity.projectName to updatedProject)
 
@@ -59,9 +59,9 @@ data class TimeTrackerStateHolder(
 
     private fun <K, N> combineMaps(maps: Collection<Map<K, List<N>>>): Map<K, List<N>> {
         return maps.fold(emptyMap()) { acc, map ->
-            map.entries.fold(acc) { acc, (key, value) ->
-                val existing = acc[key] ?: listOf()
-                acc + (key to (existing + value))
+            map.entries.fold(acc) { innerAcc, (key, value) ->
+                val existing = innerAcc[key] ?: listOf()
+                innerAcc + (key to (existing + value))
             }
         }
     }

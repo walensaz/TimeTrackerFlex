@@ -10,7 +10,6 @@ import com.intellij.util.containers.headTailOrNull
 import com.intellij.util.containers.toArray
 import java.awt.BorderLayout
 import java.time.*
-import java.util.concurrent.TimeUnit
 import javax.swing.JTable
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableRowSorter
