@@ -15,7 +15,7 @@ object TimeTrackerStatePersister : FileBasedPersister, Logging {
 
     // Save the TimeTrackerStateHolder to the specified file
     fun save(stateHolder: TimeTrackerStateHolder) {
-        logTime("Saving stateholder with size ${stateHolder.allActivities().size} tp $filePath") {
+        logOnlyEndTime("Saving stateholder with size ${stateHolder.allActivities().size} tp $filePath") {
             createFileIfNotExists()
             val json = gson.toJson(stateHolder)
             Files.write(Paths.get(filePath), json.toByteArray())
@@ -26,7 +26,7 @@ object TimeTrackerStatePersister : FileBasedPersister, Logging {
     fun load(): TimeTrackerStateHolder {
         val file = File(filePath)
         return if (file.exists() && file.isFile) {
-            logTime("Stateholder loading at $filePath") {
+            logOnlyEndTime("Stateholder loading at $filePath") {
                 val json = Files.readString(file.toPath())
                 val stateHolder =
                     gson.fromJson<TimeTrackerStateHolder>(json, object : TypeToken<TimeTrackerStateHolder>() {}.type)

@@ -8,11 +8,15 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
-@Service
+@Service(Service.Level.APP)
 class TimeTracker : Disposable, Logging {
     companion object {
-        const val PERIODIC_DELAY = 15L
+        const val PERIODIC_DELAY = 30L
         const val SECONDS_ACTIVITY_TIMEOUT = 60L
+    }
+
+    init {
+        logInfo("New time tracker service created.")
     }
 
     val timeTrackerEventHandler = TimeTrackerEventHandler()
@@ -23,10 +27,10 @@ class TimeTracker : Disposable, Logging {
 
     private fun tick() {
         timeTrackerEventHandler.processEvents()
-        TimeTrackerStatePersister.save(timeTrackerEventHandler.stateHolder)
     }
 
     override fun dispose() {
+        logInfo("Disposing...")
         TimeTrackerStatePersister.save(timeTrackerEventHandler.stateHolder)
         mainWorker.cancel(true)
     }

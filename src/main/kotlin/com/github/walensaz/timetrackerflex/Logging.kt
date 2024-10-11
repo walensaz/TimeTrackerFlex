@@ -71,4 +71,14 @@ interface Logging {
         return result
     }
 
+    // Measure and log the execution time of a function
+    fun <T> logOnlyEndTime(message: String, block: () -> T): T {
+        val startTime = System.currentTimeMillis()
+        val result = block()  // Run the function
+        val endTime = System.currentTimeMillis()
+        logInfo("$message finished. Took ${endTime - startTime} ms.")
+
+        return result
+    }
+
 }

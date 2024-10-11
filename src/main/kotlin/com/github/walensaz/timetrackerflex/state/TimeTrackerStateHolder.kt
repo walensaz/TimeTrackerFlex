@@ -9,20 +9,27 @@ typealias FileName = String
 
 data class TimeTrackerStateHolder(
     val activityLog:
-        Map<ProjectName,
-                Map<BranchName,
+        Map<TimeTrackerEventType,
+                Map<ProjectName,
+                    Map<BranchName,
                         Map<FileName,
                                 List<Activity>>
-                >>
+                >>>
 ) {
 
     fun allActivities(): List<Activity> {
-        return combineMaps(activityLog.values.flatMap { it.values }).flatMap { it.value }
+        return combineMaps(activityLog.values.flatMap { it.values }.flatMap { it.values }).flatMap { it.value }
+    }
+
+    fun convertToRawList(activityLog: Map<TimeTrackerEventType, Map<ProjectName, Map<BranchName,
+            Map<FileName, List<Activity>>>>>): List<Activity> {
+        return combineMaps(activityLog.values.flatMap { it.values }.flatMap { it.values }).flatMap { it.value }
     }
 
     fun combine(newActivities: List<Activity>): TimeTrackerStateHolder {
         return copy(activityLog = newActivities.fold(activityLog) { acc, activity ->
-            val existingByProjectName = acc[activity.projectName] ?: emptyMap()
+            val existingByActivityType = acc[activity.activityType] ?: emptyMap()
+            val existingByProjectName = existingByActivityType[activity.projectName] ?: emptyMap()
             val existingByBranchName = existingByProjectName[activity.gitBranch] ?: emptyMap()
             val existingByFileName = existingByBranchName[activity.fileName] ?: emptyList()
             val newActivities = compareEndAndNew(existingByFileName, activity)
@@ -30,9 +37,10 @@ data class TimeTrackerStateHolder(
             // Build the new structure, making sure to create new instances for immutability
             val updatedBranch = existingByBranchName + (activity.fileName to newActivities)
             val updatedProject = existingByProjectName + (activity.gitBranch to updatedBranch)
+            val updatedType = existingByActivityType + (activity.projectName to updatedProject)
 
             // Combine with the accumulator
-            acc + (activity.projectName to updatedProject)
+            acc + (activity.activityType to updatedType)
         })
     }
 
@@ -61,6 +69,7 @@ data class TimeTrackerStateHolder(
 
 data class Activity(
     val activeRange: Range<Long>,
+    val activityType: TimeTrackerEventType,
     val projectName: String,
     val gitBranch: String,
     val fileName: String

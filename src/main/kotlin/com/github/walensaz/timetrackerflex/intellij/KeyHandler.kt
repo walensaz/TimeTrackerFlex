@@ -12,7 +12,6 @@ import com.intellij.psi.PsiFile
 class KeyHandler : TypedHandlerDelegate() {
 
     override fun charTyped(c: Char, project: Project, editor: Editor, file: PsiFile): Result {
-        IntelliJUtils.isVersionControlEnabled(project)
         serviceOrNull<TimeTracker>()?.let { timeTracker ->
             timeTracker.timeTrackerEventHandler.handleEvent(TimeTrackerEventFactory.create(
                 TimeTrackerEventType.TYPING,

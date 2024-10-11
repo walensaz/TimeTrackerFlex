@@ -9,14 +9,16 @@
 
     <resource-bundle>messages.MyBundle</resource-bundle>
 
-
-
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.github.walensaz.timetrackerflex.windows.ActivityWindow" id="TimeTrackerActivityWindow"/>
         <typedHandler implementation="com.github.walensaz.timetrackerflex.intellij.KeyHandler"/>
     </extensions>
 
+    <projectListeners>
+        <listener class="com.github.walensaz.timetrackerflex.intellij.MyFileEditorListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+    </projectListeners>
+
     <applicationListeners>
-        <listener class="com.github.walensaz.timetrackerflex.listeners.MyApplicationActivationListener" topic="com.intellij.openapi.application.ApplicationActivationListener"/>
     </applicationListeners>
 </idea-plugin>

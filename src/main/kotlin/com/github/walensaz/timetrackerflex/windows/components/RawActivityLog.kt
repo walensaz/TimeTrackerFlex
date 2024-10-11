@@ -9,11 +9,13 @@ import javax.swing.*
 import javax.swing.table.DefaultTableModel
 import java.awt.BorderLayout
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
+import javax.swing.table.TableRowSorter
 
-class ActivityTable(activities: List<Activity>) : JBPanel<ActivityTable>(BorderLayout()) {
-    private val columnNames = arrayOf("Project", "Branch", "File", "Duration (Seconds)", "Date")
+class RawActivityLog(activities: List<Activity>) : JBPanel<RawActivityLog>(BorderLayout()) {
+    private val columnNames = arrayOf("Type", "Project", "Branch", "File", "Duration (Seconds)", "Date")
 
     // The model to store and manage table data
     private val tableModel = object : DefaultTableModel(mapActivitiesToData(activities), columnNames) {
@@ -24,17 +26,19 @@ class ActivityTable(activities: List<Activity>) : JBPanel<ActivityTable>(BorderL
 
         override fun getColumnClass(columnIndex: Int): Class<*> {
             return when (columnIndex) {
-                3 -> Long::class.java
+                4 -> Long::class.java
+                5 -> LocalDateTime::class.java
                 else -> String::class.java
             }
         }
     }
 
-    val table: JBTable = JBTable(tableModel)
+    private val table: JBTable = JBTable(tableModel)
 
     init {
         table.autoResizeMode = JTable.AUTO_RESIZE_ALL_COLUMNS
         table.fillsViewportHeight = true
+        table.rowSorter = TableRowSorter(tableModel)
         val scrollPane = JBScrollPane(table)
         add(scrollPane, BorderLayout.CENTER)
     }
@@ -43,7 +47,7 @@ class ActivityTable(activities: List<Activity>) : JBPanel<ActivityTable>(BorderL
     private fun mapActivitiesToData(activities: List<Activity>): Array<Array<Any>> {
         return activities.map {
             toRow(it)
-        }.toArray(emptyArray()) as Array<Array<Any>>
+        }.toArray(emptyArray())
     }
 
     // Add an activity to the table
@@ -79,9 +83,9 @@ class ActivityTable(activities: List<Activity>) : JBPanel<ActivityTable>(BorderL
 
     private fun toRow(activity: Activity): Array<Any> {
         val timeRange = activity.activeRange.to - activity.activeRange.from
-        return arrayOf(activity.projectName, activity.gitBranch,
+        return arrayOf(activity.activityType.name, activity.projectName, activity.gitBranch,
             activity.fileName, TimeUnit.MILLISECONDS.toSeconds(timeRange),
-            Instant.ofEpochMilli(activity.activeRange.from).atZone(ZoneId.systemDefault()).toLocalDateTime().toString()
+            Instant.ofEpochMilli(activity.activeRange.from).atZone(ZoneId.systemDefault()).toLocalDateTime()
         )
     }
 }
