@@ -1,8 +1,12 @@
 package com.github.walensaz.timetrackerflex
 
+import com.github.walensaz.timetrackerflex.factory.TimeTrackerEventFactory
 import com.github.walensaz.timetrackerflex.handlers.TimeTrackerEventHandler
+import com.github.walensaz.timetrackerflex.intellij.IntelliJUtils
+import com.github.walensaz.timetrackerflex.state.TimeTrackerEventType
 import com.github.walensaz.timetrackerflex.state.persistence.TimeTrackerStatePersister
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.util.concurrency.AppExecutorUtil
 import java.util.concurrent.ScheduledFuture
@@ -23,7 +27,7 @@ class TimeTracker : Disposable, Logging {
 
     private val mainWorker: ScheduledFuture<*> = AppExecutorUtil
         .getAppScheduledExecutorService()
-        .scheduleWithFixedDelay({tick()}, 1, PERIODIC_DELAY, TimeUnit.SECONDS)
+        .scheduleWithFixedDelay({tick()}, 15L, PERIODIC_DELAY, TimeUnit.SECONDS)
 
     private fun tick() {
         timeTrackerEventHandler.processEvents()
@@ -31,9 +35,8 @@ class TimeTracker : Disposable, Logging {
 
     override fun dispose() {
         logInfo("Disposing...")
-        TimeTrackerStatePersister.save(timeTrackerEventHandler.stateHolder)
         mainWorker.cancel(true)
+        timeTrackerEventHandler.processEvents()
+        TimeTrackerStatePersister.save(timeTrackerEventHandler.stateHolder)
     }
-
-
 }

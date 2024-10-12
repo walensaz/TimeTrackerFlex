@@ -14,7 +14,7 @@ import javax.swing.JTable
 import javax.swing.table.DefaultTableModel
 import javax.swing.table.TableRowSorter
 
-class ActiveActivityLog(activities: List<Activity>) : JBPanel<ActiveActivityLog>(BorderLayout()) {
+class ActiveActivityLog(activities: List<Activity>, private val eventType: TimeTrackerEventType) : JBPanel<ActiveActivityLog>(BorderLayout()) {
     private val columnNames = arrayOf("Project", "Branch", "File", "Active Time", "Inactive Time", "Date")
 
     // The model to store and manage table data
@@ -60,19 +60,14 @@ class ActiveActivityLog(activities: List<Activity>) : JBPanel<ActiveActivityLog>
         }.toArray(emptyArray())
     }
 
-    // Add an activity to the table
-//    fun addActivity(activity: Activity) {
-//        tableModel.addRow(arrayOf(activity.name, activity.duration, activity.isCompleted))
-//    }
-
     fun clearTable() {
         tableModel.setNumRows(0)
     }
 
     fun addAll(activityLog: Map<TimeTrackerEventType, Map<ProjectName, Map<BranchName,
             Map<FileName, List<Activity>>>>>) {
-        val changeFileEvents = activityLog.getOrDefault(TimeTrackerEventType.CHANGE_FILE, emptyMap())
-        val allFilesChanges = changeFileEvents.values.flatMap { it.values }.flatMap { it.values }.flatten()
+        val changeFileEvents = activityLog.getOrDefault(eventType, emptyMap())
+        val allFilesChanges = changeFileEvents.values.flatMap { it.values }.flatMap { it.values }.flatten().sortedBy { it.activeRange.from }
         recursionAll(allFilesChanges).forEach { row ->
             tableModel.addRow(row)
         }

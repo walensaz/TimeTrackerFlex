@@ -49,9 +49,8 @@ data class TimeTrackerStateHolder(
         else {
             val lastEntry = activityLog.last()
             if (lastEntry.canCombine(newActivity)) {
-                val diff = newActivity.activeRange.to - newActivity.activeRange.from
                 val fixedLastEntry =
-                    lastEntry.copy(activeRange = Range(lastEntry.activeRange.from, lastEntry.activeRange.to + diff))
+                    lastEntry.copy(activeRange = Range(lastEntry.activeRange.from, newActivity.activeRange.to))
                 activityLog.dropLast(1) + fixedLastEntry
             } else activityLog + newActivity
         }

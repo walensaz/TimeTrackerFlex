@@ -44,6 +44,9 @@ class TimeTrackerEventHandler : Logging {
                         TimeTrackerEventType.CHANGE_FILE -> queue.map {
                             stateHolder = stateHolder.combine(queue.map { createActivity(it) })
                         }
+                        TimeTrackerEventType.BRANCH_CHANGE -> queue.map {
+                            stateHolder = stateHolder.combine(queue.map { createActivity(it) })
+                        }
                     }
                 }
             }
@@ -87,11 +90,21 @@ class TimeTrackerEventHandler : Logging {
     }
 
     private fun createActivity(event: TimeTrackerEvent): Activity {
-        val branch = IntelliJUtils.getGitBranchOrEmpty(event.project)
-        val projectName = event.project.name
+        return when(event.type) {
+            TimeTrackerEventType.BRANCH_CHANGE -> {
+                val projectName = event.project.name
+                val defaultActivity = Activity(Range<Long>(event.timestamp, event.timestamp), event.type, projectName, event.fileName, "N/A")
+                defaultActivity
+            }
+            else -> {
+                val branch = IntelliJUtils.getGitBranchOrEmpty(event.project)
+                val projectName = event.project.name
 
-        val defaultActivity = Activity(Range<Long>(event.timestamp, event.timestamp), event.type, projectName, branch, event.fileName)
-        return defaultActivity
+                val defaultActivity = Activity(Range<Long>(event.timestamp, event.timestamp), event.type, projectName, branch, event.fileName)
+                defaultActivity
+            }
+        }
+
     }
 
     private fun copyAndClearQueues(): Map<TimeTrackerEventType, Queue<TimeTrackerEvent>> {

@@ -72,15 +72,6 @@ class RawActivityLog(activities: List<Activity>) : JBPanel<RawActivityLog>(Borde
         }
     }
 
-    // Update an activity in the table
-//    fun updateActivity(rowIndex: Int, activity: Activity) {
-//        if (rowIndex >= 0 && rowIndex < tableModel.rowCount) {
-//            tableModel.setValueAt(activity.name, rowIndex, 0)
-//            tableModel.setValueAt(activity.duration, rowIndex, 1)
-//            tableModel.setValueAt(activity.isCompleted, rowIndex, 2)
-//        }
-//    }
-
     private fun toRow(activity: Activity): Array<Any> {
         val timeRange = activity.activeRange.to - activity.activeRange.from
         return arrayOf(activity.activityType.name, activity.projectName, activity.gitBranch,

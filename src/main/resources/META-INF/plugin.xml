@@ -12,11 +12,14 @@
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow factoryClass="com.github.walensaz.timetrackerflex.windows.ActivityWindow" id="TimeTrackerActivityWindow"/>
         <typedHandler implementation="com.github.walensaz.timetrackerflex.intellij.KeyHandler"/>
+        <postStartupActivity implementation="com.github.walensaz.timetrackerflex.intellij.ProjectStartupActivity"/>
     </extensions>
 
     <projectListeners>
         <listener class="com.github.walensaz.timetrackerflex.intellij.MyFileEditorListener"
                   topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+        <listener class="com.github.walensaz.timetrackerflex.intellij.GitBranchChangeListener"
+                  topic="com.intellij.openapi.vcs.BranchChangeListener"/>
     </projectListeners>
 
     <applicationListeners>

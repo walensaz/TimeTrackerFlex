@@ -5,7 +5,8 @@ import com.intellij.openapi.project.Project
 
 enum class TimeTrackerEventType {
     CHANGE_FILE,
-    TYPING
+    TYPING,
+    BRANCH_CHANGE,
 }
 
 interface TimeTrackerEvent {

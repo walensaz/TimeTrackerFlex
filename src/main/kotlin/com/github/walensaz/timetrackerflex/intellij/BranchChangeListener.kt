@@ -3,22 +3,23 @@ package com.github.walensaz.timetrackerflex.intellij
 import com.github.walensaz.timetrackerflex.TimeTracker
 import com.github.walensaz.timetrackerflex.factory.TimeTrackerEventFactory
 import com.github.walensaz.timetrackerflex.state.TimeTrackerEventType
+import com.intellij.openapi.command.impl.DummyProject
 import com.intellij.openapi.components.service
-import com.intellij.openapi.fileEditor.FileEditorManagerEvent
-import com.intellij.openapi.fileEditor.FileEditorManagerListener
+import com.intellij.openapi.vcs.BranchChangeListener
 
-class MyFileEditorListener : FileEditorManagerListener {
+class GitBranchChangeListener: BranchChangeListener {
 
     private val timeTrackerService = service<TimeTracker>()
 
-    override fun selectionChanged(event: FileEditorManagerEvent) {
-        val newFile = event.newFile ?: return
+    // old branch probably?
+    override fun branchWillChange(branch: String) {}
+
+    override fun branchHasChanged(branch: String) {
         timeTrackerService.timeTrackerEventHandler.handleEvent(
             TimeTrackerEventFactory.create(
-                TimeTrackerEventType.CHANGE_FILE,
-                event.manager.project,
-                newFile.name
+                TimeTrackerEventType.BRANCH_CHANGE,
+                IntelliJUtils.getMostLikelyActiveProject() ?: DummyProject.getInstance(),
+                branch
             ))
-        super.selectionChanged(event)
     }
 }
