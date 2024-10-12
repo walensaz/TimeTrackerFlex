@@ -2,6 +2,9 @@ package com.github.walensaz.timetrackerflex.state
 
 import com.github.walensaz.timetrackerflex.handlers.TimeTrackerEventHandler
 import com.intellij.util.Range
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 typealias ProjectName = String
 typealias BranchName = String
@@ -84,9 +87,15 @@ data class Activity(
             else
                 this.activeRange.from - activity.activeRange.to < TimeTrackerEventHandler.MILLIS_MAX_DIFF
 
+        val sameDay = dayFromInstant(activeRange.to) == dayFromInstant(activity.activeRange.from)
 
-        return sameProject && sameBranch && sameFile && timeCloseEnough
+        return sameProject && sameBranch && sameFile && timeCloseEnough && sameDay
     }
+
+    private fun dayFromInstant(time: Long) = LocalDateTime
+        .ofInstant(
+            Instant.ofEpochMilli(time), ZoneId.systemDefault()
+        ).dayOfYear
 }
 
 
